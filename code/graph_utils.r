@@ -59,15 +59,19 @@ find_edges <- function(x){
 
 #' Make a GIF of fr graphs from a list of adjacency matricies
 #' where the layout is 'set' based on the final graphs
-#' @param x A list of adjancency matricies
+#' @param x A list of adjancency matricies or graphs (of class igraph)
 #' @param filename File path to output GIF to
 #'
 make_gif <- function(x, filename = "MY_GIF.gif"){
     require(igraph)
     library(animation)
     n <- length(x)
-    g <- lapply(x,  graph_from_adjacency_matrix, mode = "undirected")
-    l <- layout_with_fr(g[[n]])
+    if(class(x[[1]]) == "igraph"){
+        g <- x
+    }else{
+        g <- lapply(x,  graph_from_adjacency_matrix, mode = "undirected")
+    }
+    l <- layout_with_fr (g[[n]])
     saveGIF({
         for (i in 1:n){
             col = rep(c(adjustcolor("black", alpha.f = 1),
@@ -75,5 +79,32 @@ make_gif <- function(x, filename = "MY_GIF.gif"){
             plot(g[[i]], layout = l, vertex.color = col, vertex.frame.color = col,
                  vertex.label = NA, edge.size = 2, vertex.size = 3)
         }
-    },movie.name = filename, interval = 0.25)
+    },movie.name = filename, interval = 0.1)
+}
+#' A fuction to calculate the normalized closeness centrality
+#' for each vertex of a graph \source{https://en.wikipedia.org/wiki/Closeness_centrality}
+#'
+#' Internal use
+#' @param graph An object of class \code{igraph}
+calculate_connectedness <- function(graph) {
+  closeness_vals <- igraph::closeness(graph, normalized = TRUE)
+  closeness_vals[is.nan(closeness_vals)] <- 0
+  return(closeness_vals)
+}
+#' A function that retains the k largest elements of a vector
+#' and set others to zero
+#'
+#' Internal use
+#' @param vec A numeric vector
+#' @param k The value of the "largest" elements to retain
+k_largest_elements <- function(vec, k) {
+  if (k == 0) {
+    return(rep(0, length(vec)))
+  }
+  if (k >= length(vec)) {
+    return(vec)
+  }
+  threshold <- sort(vec, decreasing = TRUE)[k]
+  vec[vec < threshold] <- 0
+  return(vec)
 }

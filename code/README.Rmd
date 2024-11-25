@@ -82,3 +82,38 @@ as.numeric(fit$par[2]*fit$par[3])
 ## standard errors
 fit$hessian |> solve() |> diag() |> sqrt()
 ```
+
+
+## Simulating a dynamic marked Hawkes
+
+```{r}
+source("graph_utils.r")
+source("simulate.r")
+set.seed(2024)
+param_hawkes = c(lambda0 = 1,
+  alpha = 1,
+  beta1 = 4,
+  beta2 = 8)
+sim <- simulate_marked_hawkes(hawkes_params = param_hawkes)
+## The final graph
+require(igraph)
+plot(sim$graph, layout = layout_with_fr,  edge.size = 2, vertex.size = 3,  edge.size = 2, vertex.size = 3)
+## The whole Hawkes point pattern
+require(ggplot2)
+ggplot(sim$data, aes(x = time, y = 1)) +
+  geom_point(pch = "|", size = 10) +
+  theme_classic() +
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
+  ylab("") + xlab("Time (arb units)")
+```
+
+The time-evolving networks
+
+```{r, echo=FALSE}
+## make_gif(sim$graphs)
+```
+
+![](MY_GIF.gif)
+
+## Fitting a dynamic marked Hawkes
+

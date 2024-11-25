@@ -104,3 +104,39 @@ fit$hessian |> solve() |> diag() |> sqrt()
 
     ##        mu   abratio      beta 
     ## 0.1709137 0.1443989 0.6325161
+
+## Simulating a dynamic marked Hawkes
+
+``` r
+source("graph_utils.r")
+source("simulate.r")
+set.seed(2024)
+param_hawkes = c(lambda0 = 1,
+  alpha = 1,
+  beta1 = 4,
+  beta2 = 8)
+sim <- simulate_marked_hawkes(hawkes_params = param_hawkes)
+## The final graph
+require(igraph)
+plot(sim$graph, layout = layout_with_fr,  edge.size = 2, vertex.size = 3,  edge.size = 2, vertex.size = 3)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+``` r
+## The whole Hawkes point pattern
+require(ggplot2)
+ggplot(sim$data, aes(x = time, y = 1)) +
+  geom_point(pch = "|", size = 10) +
+  theme_classic() +
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
+  ylab("") + xlab("Time (arb units)")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-8-2.png)<!-- -->
+
+The time-evolving networks
+
+![](MY_GIF.gif)
+
+## Fitting a dynamic marked Hawkes
