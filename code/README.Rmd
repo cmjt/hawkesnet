@@ -97,7 +97,9 @@ param_hawkes = c(lambda0 = 1,
 sim <- simulate_marked_hawkes(hawkes_params = param_hawkes)
 ## The final graph
 require(igraph)
-plot(sim$graph, layout = layout_with_fr,  edge.size = 2, vertex.size = 3,  edge.size = 2, vertex.size = 3)
+plot(sim$graph, layout = layout_with_fr, 
+     edge.size = 2, vertex.size = 3, 
+     edge.size = 2, vertex.label = NA, vertex.color = "black")
 ## The whole Hawkes point pattern
 require(ggplot2)
 ggplot(sim$data, aes(x = time, y = 1)) +
@@ -117,3 +119,52 @@ The time-evolving networks
 
 ## Fitting a dynamic marked Hawkes
 
+```{r, eval = FALSE}
+set.seed(2024)
+param_hawkes = c(lambda0 = 1,
+  alpha = 1,
+  beta1 = 4,
+  beta2 = 8)
+sim <- simulate_marked_hawkes(hawkes_params = param_hawkes)
+```
+
+```{r}
+## check against repo RTMB template
+## function from source("rtmb.r")
+require(RTMB)
+abratio <- 1/4
+pars <- list(log_mu = log(1), logit_abratio = log(abratio/(1 - abratio)), 
+             log_beta01 = log(4), log_beta02 = log(8))
+times <- list(times = sim$data$time, marks = sim$data$mark/100)
+## negative log-likelihood calculated at pars
+mark_effect_hawkes(params = pars)
+```
+
+
+```{r, eval = FALSE}
+## parameter estimation
+obj <- MakeADFun(mark_effect_hawkes, pars, silent = TRUE)
+opt <- nlminb(obj$par, obj$fn, obj$gr)
+summary(sdreport(obj), "report")
+```
+
+
+```{r}
+## check against repo analytical fun
+## function from  source("analytical.r")
+pars <- c(mu = 1, alpha = 1, 
+             beta01 = 4, beta02 = 8)
+data <- data.frame(times = sim$data$time, marks = sim$data$mark/100)
+## negative log likelihood at pars
+marked_hawkes_analytic(params = pars,data = data)
+```
+
+
+```{r, eval = FALSE}
+## using optim just for parameter estimation
+fit <- optim(par = pars, fn = marked_hawkes_analytic, data = data, 
+             method = "Nelder-Mead", hessian = FALSE)
+fit02 <- nlminb(pars, marked_hawkes_analytic, data = data )
+## parameter ests
+fit$par
+```

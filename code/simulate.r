@@ -115,7 +115,8 @@ simulate_marked_hawkes <- function(hawkes_params,
     beta1 <- hawkes_params["beta1"]
     beta2 <- hawkes_params["beta2"]
     ## Initialize the mark generator and graph environment
-    mark_gen_obj <- create_mark_generator(N_min, epsilon, p_max, scale_factor)
+    mark_gen_obj <- create_mark_generator(N_min = N_min, epsilon = epsilon, 
+                                          p_max = p_max, scale_factor = scale_factor)
     mark_gen <- mark_gen_obj$mark_gen
     env <- mark_gen_obj$graph_env  
     ## Initialize event list

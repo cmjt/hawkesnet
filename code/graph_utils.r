@@ -64,7 +64,7 @@ find_edges <- function(x){
 #'
 make_gif <- function(x, filename = "MY_GIF.gif"){
     require(igraph)
-    library(animation)
+    require(animation)
     n <- length(x)
     if(class(x[[1]]) == "igraph"){
         g <- x
@@ -81,6 +81,21 @@ make_gif <- function(x, filename = "MY_GIF.gif"){
         }
     },movie.name = filename, interval = 0.1)
 }
+#' Function to plot adjacency matrices.
+plot_adj <- function(x){
+    require(ggplot2)
+    require(igraph)
+    require(reshape2)
+    adj <- as_adjacency_matrix(x, sparse = FALSE)
+    colnames(adj) <- rownames(adj) <- 1:nrow(adj)
+    long <- melt(adj)
+    p <- ggplot(long, aes(x = Var2, y = Var1)) + 
+        geom_tile(aes(fill = as.factor(value)), col = "grey") + 
+        scale_fill_manual(values= c( "white", "red"))  +
+        theme_void() +
+        theme(legend.position = "none")
+    return(p)
+}
 #' A fuction to calculate the normalized closeness centrality
 #' for each vertex of a graph \source{https://en.wikipedia.org/wiki/Closeness_centrality}
 #'
@@ -89,7 +104,11 @@ make_gif <- function(x, filename = "MY_GIF.gif"){
 calculate_connectedness <- function(graph) {
   closeness_vals <- igraph::closeness(graph, normalized = TRUE)
   closeness_vals[is.nan(closeness_vals)] <- 0
-  return(closeness_vals)
+  components_info <- igraph::components(graph)
+  component_sizes <- igraph::sizes(components_info)
+  vertex_component_sizes <- component_sizes[components_info$membership]
+  closeness_scaled <- closeness_vals * vertex_component_sizes
+  return(closeness_scaled)
 }
 #' A function that retains the k largest elements of a vector
 #' and set others to zero
