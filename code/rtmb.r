@@ -34,14 +34,14 @@ mark_effect_hawkes <- function(params){
     getAll(times, params)
     mu <- exp(log_mu)
     beta01 <- exp(log_beta01)
-    beta02 <- exp(log_beta02)
+    beta02 <- -exp(log_beta02)
     alpha <- exp(logit_abratio) / (1 + exp(logit_abratio)) * beta01
     n <- length(times)
     last <- times[n]
     nll <- 0
     A <- advector(numeric(n)) 
     for(i in 2:n){
-        A[i] <- sum(exp((-beta01 * (times[i] - times[1:(i - 1)])) - (beta02 * marks[1:(i - 1)])
+        A[i] <- sum(exp((-beta01 * (times[i] - times[1:(i - 1)])) - (beta02 * marks[1:(i - 1)])))
     }
     term_3vec <- log(mu + alpha * A) 
     nll <- (mu * last) + (alpha/beta01) * sum(exp(-beta02 * marks) * (1 - exp(-beta01 * (last - times)))) -

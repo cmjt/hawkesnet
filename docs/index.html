@@ -665,7 +665,7 @@ Observed hourly rate of connected events <span class="math inline">\(=0.148\)</s
 <section id="marked-hawkes-process" class="slide level2">
 <h2>Marked Hawkes process</h2>
 <p>The conditional intensity, <span class="math inline">\(\lambda(t)\)</span>, for current time <span class="math inline">\(t\)</span> and mark <span class="math inline">\(m\)</span> is given by</p>
-<p><span class="math display">\[\lambda(t, m) = \mu + \alpha\Sigma_{i:\tau_i&lt;t}\text{exp}(-\beta_1 * (t-\tau_i) - \beta_2 * m).\]</span></p>
+<p><span class="math display">\[\lambda(t, m) = \mu + \alpha\Sigma_{i:\tau_i&lt;t}\text{exp}(-\beta_1 * (t-\tau_i) + \beta_2 * m).\]</span></p>
 <p>We want <span class="math inline">\(m\)</span> to reflect how connected each events is and to estimate the added <em>risk</em> of a connected event exciting another.</p>
 </section>
 <section id="closeness-centrality" class="slide level2">
@@ -676,8 +676,8 @@ Observed hourly rate of connected events <span class="math inline">\(=0.148\)</s
 <section id="section-4" class="slide level2">
 <h2></h2>
 
-<img data-src="marked_effect_fit_snapshot.png" class="r-stretch"><p style="font-size:21px; ">
-<span class="math inline">\(\mu = 0.214 \; (0.003)\)</span>, <span class="math inline">\(\alpha = 0.108 \; (0.006)\)</span>, <span class="math inline">\(\beta_1 = 0.507 \; (0.034)\)</span>, and <span class="math inline">\(\beta_2 = 1e-7 \; (1e-7)\)</span>
+<img data-src="marked_effect_fit_snapshot_02.jpg" class="r-stretch"><p style="font-size:21px; ">
+<span class="math inline">\(\mu = 0.214 \; (0.003)\)</span>, <span class="math inline">\(\alpha = 0.097 \; (0.006)\)</span>, <span class="math inline">\(\beta_1 = 0.514 \; (0.035)\)</span>, and <span class="math inline">\(\beta_2 = 0.329 \; (0.066)\)</span>
 </p>
 </section>
 <section id="but" class="slide level2">
@@ -723,7 +723,12 @@ Observed hourly rate of connected events <span class="math inline">\(=0.148\)</s
 </section>
 <section id="section-6" class="slide level2">
 <h2></h2>
-<p>[cool estimated conditional intensities plots here]</p>
+<center>
+<img data-src="all_pars_todate.png">
+</center>
+<div class="footer">
+<p>Recall for a univariate Hawkes we had <span class="math inline">\(\mu = 0.214\)</span>, <span class="math inline">\(\alpha = 0.108\)</span> &amp; <span class="math inline">\(\beta_1 = 0.507\)</span></p>
+</div>
 </section>
 <section id="going-forward" class="slide level2">
 <h2>Going forward</h2>
