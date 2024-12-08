@@ -101,14 +101,20 @@ plot_adj <- function(x){
 #'
 #' Internal use
 #' @param graph An object of class \code{igraph}
-calculate_connectedness <- function(graph) {
+#' @param min_component the minimum component size to return as the "kitchen sink"
+#' default 1
+calculate_connectedness <- function(graph, min_component = 1) {
   closeness_vals <- igraph::closeness(graph, normalized = TRUE)
   closeness_vals[is.nan(closeness_vals)] <- 0
   components_info <- igraph::components(graph)
+  ## making non-connected their own component
+  member_info <- components_info$membership
+ member_info[components_info$csize[member_info] <= min_component] <- "single"
   component_sizes <- igraph::sizes(components_info)
   vertex_component_sizes <- component_sizes[components_info$membership]
   closeness_scaled <- closeness_vals * vertex_component_sizes
-  return(closeness_scaled)
+  return(list("scaled_closeness" = as.numeric(closeness_scaled),
+              "components" =  as.factor(member_info)))
 }
 #' A function that retains the k largest elements of a vector
 #' and set others to zero

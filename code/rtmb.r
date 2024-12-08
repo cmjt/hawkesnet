@@ -52,3 +52,30 @@ mark_effect_hawkes <- function(params){
     ADREPORT(beta02)
     return(nll)
 }
+
+hawkes_rtmb_marked <- function(params){
+    getAll(data, params)
+    ## data a list with elements
+    ## times (vector of event times), and 
+    ## marks (list of marks for each event at each event time)
+    ## components (list of graph component memberships for each event at each event time)
+    ## note that all unconnected components should be labeled as one kitchen sink
+    ## named "single" component
+    ## n <- length(times)
+    ## last <- times[n]
+    ## nll <- 0
+    ## A <- advector(numeric(n))
+    ## for(i in 2:n){
+    ##     comps <- split(marks[[i]], components[[i]])
+    ##     for(c in 1:length(comps)){
+    ##         A[i] <- sum(exp(-beta[c] * (times[i] - times[i - 1])) * (marks[i - 1] + A[i - 1]))
+    ##         term_3vec <- sum(log(mu + alpha[c] * A))
+    ##         nll <- nll + (mu * last) +
+    ##             (sum(alpha[c]/beta[c]) * (marks[i] - marks[n] - A[n])) - sum(term_3vec)
+    ##     }
+    ## }
+    ## ADREPORT(mu)
+    ## ADREPORT(alpha)
+    ## ADREPORT(beta)
+    ## return(nll)
+}
