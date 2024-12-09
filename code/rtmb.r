@@ -5,7 +5,7 @@
 #' @details The function assumes (a \code{RTMB} thing) that there exists a data frame \code}
 #' times with the variable \code{times} as the vector of ordered numeric times.
 hawkes_rtmb <- function(params){
-    getAll(times, params)
+    getAll(data, params)
     mu <- exp(log_mu)
     beta <- exp(log_beta)
     alpha <- exp(logit_abratio) / (1 + exp(logit_abratio)) * beta
@@ -53,29 +53,30 @@ mark_effect_hawkes <- function(params){
     return(nll)
 }
 
-hawkes_rtmb_marked <- function(params){
+hawkes_rtmb_component <- function(params){
     getAll(data, params)
     ## data a list with elements
     ## times (vector of event times), and 
-    ## marks (list of marks for each event at each event time)
-    ## components (list of graph component memberships for each event at each event time)
-    ## note that all unconnected components should be labeled as one kitchen sink
-    ## named "single" component
-    ## n <- length(times)
-    ## last <- times[n]
-    ## nll <- 0
-    ## A <- advector(numeric(n))
-    ## for(i in 2:n){
-    ##     comps <- split(marks[[i]], components[[i]])
-    ##     for(c in 1:length(comps)){
-    ##         A[i] <- sum(exp(-beta[c] * (times[i] - times[i - 1])) * (marks[i - 1] + A[i - 1]))
-    ##         term_3vec <- sum(log(mu + alpha[c] * A))
-    ##         nll <- nll + (mu * last) +
-    ##             (sum(alpha[c]/beta[c]) * (marks[i] - marks[n] - A[n])) - sum(term_3vec)
-    ##     }
-    ## }
-    ## ADREPORT(mu)
-    ## ADREPORT(alpha)
-    ## ADREPORT(beta)
-    ## return(nll)
+    ## marks (marks for each event at each event time)
+    ## components (graph component memberships for each event at each event time)
+    ## lambda0 the calculated base rate (fixed) pre calculated
+    ## from all unconnected verts
+    beta <- exp(log_beta)
+    alpha <- exp(logit_abratio) / (1 + exp(logit_abratio)) * (beta/mean(marks))
+    n <- length(times)
+    last <- times[n]
+    ## initialize 
+    nll <- 0
+    A <- advector(numeric(n))
+    for(i in 2:n){
+        time_diff_scaled <- (times[i] - times[1:(i-1)])/marks[i]
+        A[i] <- sum(alpha * marks[i] * exp(-beta * time_diff_scaled))
+        ## recall lambda0 is the fixed baserate
+        nll <- nll + log(lambda0 + A[i])
+    }
+    integral <- lambda0*times[n] - (alpha/beta) * sum(marks * (1 - exp(-beta * ((times[n] - times)/marks))))
+    nll <- nll - integral
+    ADREPORT(alpha)
+    ADREPORT(beta)
+    return(-nll)
 }
